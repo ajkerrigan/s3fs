@@ -1234,7 +1234,7 @@ def test_versions(s3):
     with s3.open(versioned_file, 'wb') as fo:
         fo.write(b'1')
     with s3.open(versioned_file, 'wb') as fo:
-        fo.write(b'2')
+        fo.write(b'22')
     assert s3.isfile(versioned_file)
     versions = s3.object_version_info(versioned_file)
     version_ids = [version['VersionId'] for version in versions]
@@ -1242,10 +1242,11 @@ def test_versions(s3):
 
     with s3.open(versioned_file) as fo:
         assert fo.version_id == version_ids[1]
-        assert fo.read() == b'2'
+        assert fo.read() == b'22'
 
     with s3.open(versioned_file, version_id=version_ids[0]) as fo:
         assert fo.version_id == version_ids[0]
+        assert fo.size == fo.cache.size
         assert fo.read() == b'1'
 
 
